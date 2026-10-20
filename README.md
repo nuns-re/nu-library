@@ -1,20 +1,18 @@
-# nulib
+# nu-library
 
-nulib is a portable Rust middleware for NU Library graphics and audio assets.
+nu-library is a portable Rust middleware for NU Library graphics and audio assets.
 
-It provides endian aware format readers, backend neutral render descriptions, and a small asset loading layer. 
+
 
 ## Formats
 
 | Format | Status |
 |---|---|
-| NUD 1.0 / 2.0 models | read |
-| NUT textures | read |
-| NSLX shader banks | read |
-| NUS2 sound banks | read |
-| NFH bitmap fonts | read |
-
-See [docs/formats.md](docs/formats.md) for coverage and remaining gaps.
+| [NUD 1.0 / 2.0 models](crates/nu-formats/src/model/mod.rs) | read |
+| [NUT textures](crates/nu-formats/src/texture.rs) | read |
+| [NSLX shader banks](crates/nu-formats/src/shader.rs) | read |
+| [NUS2 sound banks](crates/nu-formats/src/audio/mod.rs) | read |
+| [NFH bitmap fonts](crates/nu-formats/src/font.rs) | read |
 
 
 
