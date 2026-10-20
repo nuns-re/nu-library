@@ -12,6 +12,9 @@ It provides endian aware format readers, backend neutral render descriptions, an
 | NUT textures | read |
 | NSLX shader banks | read |
 | NUS2 sound banks | read |
+| NFH bitmap fonts | read |
+
+See [docs/formats.md](docs/formats.md) for coverage and remaining gaps.
 
 
 

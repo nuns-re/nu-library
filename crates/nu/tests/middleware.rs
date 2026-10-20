@@ -7,6 +7,7 @@ fn registry_lists_builtin_formats() {
     assert!(names.contains(&"nut"));
     assert!(names.contains(&"nsh"));
     assert!(names.contains(&"nub"));
+    assert!(names.contains(&"nfh"));
 }
 
 #[test]

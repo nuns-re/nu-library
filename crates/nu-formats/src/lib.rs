@@ -3,6 +3,7 @@
 mod util;
 
 pub mod audio;
+pub mod font;
 pub mod model;
 pub mod shader;
 pub mod texture;
@@ -18,6 +19,7 @@ pub enum NuAsset {
     Texture(texture::Nut),
     Shader(shader::Nsh),
     Audio(audio::Nus2Bank),
+    Font(Box<font::Nfh>),
 }
 
 pub fn detect(bytes: &[u8]) -> Option<(&'static str, Endian)> {
@@ -31,6 +33,7 @@ pub fn detect(bytes: &[u8]) -> Option<(&'static str, Endian)> {
         b"NTLX" => Some(("NUT", Endian::Little)),
         b"NTP3" => Some(("NUT", Endian::Big)),
         b"NSLX" => Some(("NSH", Endian::Little)),
+        b"NFH\0" => Some(("NFH", Endian::Little)),
         _ if audio::Nus2Bank::probe(bytes) => {
             let endian = if bytes.first() == Some(&1) {
                 Endian::Little
@@ -55,6 +58,7 @@ pub fn parse(bytes: &[u8]) -> Result<NuAsset> {
         }
         b"NTLX" | b"NTP3" => Ok(NuAsset::Texture(texture::Nut::parse(bytes)?)),
         b"NSLX" => Ok(NuAsset::Shader(shader::Nsh::parse(bytes)?)),
+        b"NFH\0" => Ok(NuAsset::Font(Box::new(font::Nfh::parse(bytes)?))),
         _ if audio::Nus2Bank::probe(bytes) => Ok(NuAsset::Audio(audio::Nus2Bank::parse(bytes)?)),
         _ => Err(NuError::Unsupported),
     }
@@ -89,6 +93,18 @@ impl NuFormat for shader::Nsh {
 
     fn probe(bytes: &[u8]) -> bool {
         bytes.starts_with(b"NSLX")
+    }
+
+    fn from_bytes(bytes: &[u8], _options: &LoadOptions) -> Result<Self> {
+        Self::parse(bytes).map_err(Into::into)
+    }
+}
+
+impl NuFormat for font::Nfh {
+    const NAME: &'static str = "nfh";
+
+    fn probe(bytes: &[u8]) -> bool {
+        font::Nfh::probe(bytes)
     }
 
     fn from_bytes(bytes: &[u8], _options: &LoadOptions) -> Result<Self> {

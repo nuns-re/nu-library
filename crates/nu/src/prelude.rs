@@ -1,5 +1,5 @@
 pub use crate::asset::{AssetManager, Registry};
-pub use crate::{audio, detect, model, parse, shader, texture};
+pub use crate::{audio, detect, font, model, parse, shader, texture};
 pub use nu_core::{
     AssetSource, Endian, FileSource, LoadOptions, MemorySource, NuError, NuFormat, Result,
 };

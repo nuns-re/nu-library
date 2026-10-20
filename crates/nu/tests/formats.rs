@@ -1,4 +1,5 @@
 use nu::audio::Nus2Bank;
+use nu::font::Nfh;
 use nu::model::{decode_r11g11b10, Nud, Nud20};
 use nu::shader::Nsh;
 use nu::texture::Nut;
@@ -271,6 +272,50 @@ fn nsh_bytes() -> Vec<u8> {
     w.data
 }
 
+fn nfh_bytes() -> Vec<u8> {
+    let mut w = W::new(Endian::Little);
+    w.bytes(b"NFH\0");
+    w.i32(20);
+    w.i32(2);
+    w.zeros(4);
+    let mut family = [0u8; 32];
+    family[..4].copy_from_slice(b"Test");
+    w.bytes(&family);
+    let mut style = [0u8; 32];
+    style[..6].copy_from_slice(b"Normal");
+    w.bytes(&style);
+    for index in 0..256 {
+        w.i32(match index {
+            0x41 => 0,
+            0x42 => 1,
+            _ => 0,
+        });
+    }
+    w.i32(10);
+    w.u16(0);
+    w.u16(0);
+    w.zeros(12);
+    w.u8(8);
+    w.u8(8);
+    w.u8(0x41);
+    w.u8(0);
+    w.u8(0);
+    w.u8(1);
+    w.zeros(6);
+    w.i32(11);
+    w.u16(0);
+    w.u16(0);
+    w.zeros(12);
+    w.u8(8);
+    w.u8(8);
+    w.u8(0x42);
+    w.u8(0);
+    w.u8(0);
+    w.u8(0);
+    w.zeros(6);
+    w.data
+}
+
 fn nub_bytes(endian: Endian, marker: i8) -> Vec<u8> {
     let mut w = W::new(endian);
     w.u8(marker as u8);
@@ -415,6 +460,20 @@ fn nsh_objects_chunks_and_parameters() {
     assert_eq!(object.vertex_parameters[0].name, "MATRIX_WORLDVIEW");
     assert_eq!(object.vertex_parameters[0].type_name, "MATRIX");
     assert_eq!(object.vertex_parameters[0].number_of_parameter, 1);
+}
+
+#[test]
+fn nfh_header_entries_and_lookup() {
+    let bytes = nfh_bytes();
+    assert_eq!(nu::detect(&bytes).map(|(name, _)| name), Some("NFH"));
+    let nfh = Nfh::parse(&bytes).unwrap();
+    assert_eq!(nfh.header.font_height, 20);
+    assert_eq!(nfh.header.family(), "Test");
+    assert_eq!(nfh.header.style(), "Normal");
+    assert_eq!(nfh.entries.len(), 2);
+    assert_eq!(nfh.entry_for_char('A').unwrap().glyph_id, 10);
+    assert_eq!(nfh.entry_for_char('B').unwrap().glyph_id, 11);
+    assert!(nfh.entry_for_char('C').is_none());
 }
 
 #[test]

@@ -1,5 +1,5 @@
 use nu_core::{read_all, AssetSource, LoadOptions, NuError, NuFormat, Result};
-use nu_formats::{audio, model, texture, NuAsset};
+use nu_formats::{audio, font, model, texture, NuAsset};
 
 type Probe = fn(&[u8]) -> bool;
 type Reader = fn(&[u8]) -> Result<NuAsset>;
@@ -40,6 +40,11 @@ impl Registry {
             .with("nub", audio::Nus2Bank::probe, |bytes| {
                 audio::Nus2Bank::parse(bytes)
                     .map(NuAsset::Audio)
+                    .map_err(Into::into)
+            })
+            .with("nfh", font::Nfh::probe, |bytes| {
+                font::Nfh::parse(bytes)
+                    .map(|font| NuAsset::Font(Box::new(font)))
                     .map_err(Into::into)
             })
     }
