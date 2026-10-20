@@ -1,0 +1,17 @@
+[workspace]
+resolver = "2"
+members = ["crates/nu-core", "crates/nu-formats", "crates/nu-render", "crates/nu"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+publish = false
+
+[workspace.dependencies]
+anyhow = "1"
+binrw = "0.10"
+half = "2"
+nu-core = { path = "crates/nu-core" }
+nu-formats = { path = "crates/nu-formats" }
+nu-render = { path = "crates/nu-render" }
